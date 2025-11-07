@@ -78,11 +78,40 @@ module.exports.updateTweet = async (req, res) => {
     }
 }
 
-module.exports.deleteTweet=async(req,res)=>{
+module.exports.deleteTweet = async (req, res) => {
+    const userId = req.user.userId;
+    const tweetId = req.params.id;
+
     try {
-        
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "User is not found"
+            })
+        }
+        const tweet = await Tweet.findById(tweetId);
+        if (!tweet) {
+            return res.status(401).json({
+                success: false,
+                message: "Tweet is not found"
+            })
+        }
+
+        if (tweet.user._id.toString() !== userId) {
+            return res.status(401).json({
+
+                success: false,
+                message: "you can not this tweet"
+            })
+        }
+        await Tweet.findByIdAndDelete(tweetId);
+        return res.status(201).json({
+            success: false,
+            message: "Tweet delete successfully"
+        })
     } catch (error) {
-        
+
     }
 }
 
